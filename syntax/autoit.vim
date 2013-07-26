@@ -60,8 +60,11 @@ syn match autoitInclude "^\s*#RequireAdmin\>"
 
 " user-defined functions
 syn keyword autoitKeyword Func ByRef EndFunc Return
+	\ OnAutoItExitRegister OnAutoItExitUnRegister
 
 " built-in functions
+" adlib
+syn keyword autoitFunction AdlibRegister AdlibUnRegister
 " environment management
 syn keyword autoitFunction ClipGet ClipPut EnvGet EnvSet EnvUpdate MemGetStats
 " file, directory, and disk management
@@ -104,7 +107,7 @@ syn keyword autoitFunction GUICtrlRegisterListViewSort GUISetAccelerators
 	\ GUICtrlSetImage GUICtrlSetLimit GUICtrlSetOnEvent GUICtrlSetPos
 	\ GUICtrlSetResizing GUICtrlSetState GUICtrlSetStyle GUICtrlSetTip
 syn keyword autoitFunction GUISetBkColor GUISetCoord GUISetCursor GUISetFont
-	\ GUISetHelp GUISetIcon GUISetOnEvent GUISetState
+	\ GUISetHelp GUISetIcon GUISetOnEvent GUISetState GuiSetStyle
 " keyboard control
 syn keyword autoitFunction HotKeySet Send SendKeepActive
 " math
@@ -126,9 +129,9 @@ syn keyword autoitFunction FtpSetProxy HttpSetProxy HttpSetUserAgent InetClose
 	\ TCPConnect TCPListen TCPNameToIp TCPRecv TCPSend TCPShutDown TCPStartup
 	\ UDPBind UDPCloseSocket UDPOpen UDPRecv UDPSend UDPShutdown UDPStartup
 " obj/com reference
-syn keyword autoitFunction ObjCreate ObjEvent ObjGet ObjName
+syn keyword autoitFunction ObjCreate ObjCreateInterface ObjEvent ObjGet ObjName
 " process management
-syn keyword autoitFunction DllCall DllCallbackFree DllCallbackGetPtr
+syn keyword autoitFunction DllCall DllCallAddress DllCallbackFree DllCallbackGetPtr
 	\ DllCallbackRegister DllClose DllOpen DllStructCreate DllStructGetData
 	\ DllStructGetPtr DllStructGetSize DllStructSetData ProcessClose
 	\ ProcessExists ProcessGetStats ProcessSetPriority ProcessList ProcessWait
@@ -142,8 +145,8 @@ syn keyword autoitFunction StringAddCR StringCompare StringFormat
 	\ StringIsASCII StringIsDigit StringIsFloat StringIsInt StringIsLower
 	\ StringIsSpace StringIsUpper StringIsXDigit StringLeft StringLen
 	\ StringLower StringMid StringRegExp StringRegExpReplace StringReplace
-	\ StringRight StringStripCR StringStripWS StringToASCIIArray StringTrimLeft
-	\ StringTrimRight StringUpper
+	\ StringRight StringSplit StringStripCR StringStripWS StringToASCIIArray
+	\ StringTrimLeft StringTrimRight StringUpper
 " timer and delay
 syn keyword autoitFunction Sleep TimerInit TimerDiff
 " tray
@@ -155,7 +158,7 @@ syn keyword autoitFunction TrayCreateItem TrayCreateMenu TrayItemDelete
 syn keyword autoitFunction Asc AscW Assign Binary BinaryLen BinaryMid
 	\ BinaryToString Chr ChrW Dec Eval Hex HWnd Int IsAdmin IsArray IsBinary
 	\ IsBool IsDeclared IsDllStruct IsFloat IsHWnd IsInt IsKeyword IsNumber
-	\ IsObj IsString Number String StringToBinary UBound
+	\ IsObj IsPtr IsString Number String StringToBinary UBound
 " window management
 syn keyword autoitFunction WinActivate WinActive WinClose WinExists WinFlash
 	\ WinGetCaretPos WinGetClassList WinGetClientSize WinGetHandle WinGetPos
@@ -180,19 +183,20 @@ syn keyword autoitFunction _ClipBoard_ChangeChain _ClipBoard_Close
 	\ _ClipBoard_CountFormats _ClipBoard_Empty _ClipBoard_EnumFormats
 	\ _ClipBoard_FormatStr _ClipBoard_GetData _ClipBoard_GetDataEx
 	\ _ClipBoard_GetFormatName _ClipBoard_GetOpenWindow _ClipBoard_GetOwner
-	\ _ClipBoard_GetPriorityFormat _ClipBoard_SequenceNumber
+	\ _ClipBoard_GetPriorityFormat _ClipBoard_GetSequenceNumber
 	\ _ClipBoard_GetViewer _ClipBoard_IsFormatAvailable _ClipBoard_Open
 	\ _ClipBoard_Open _ClipBoard_RegisterFormat _ClipBoard_SetData
 	\ _ClipBoard_SetDataEx _ClipBoard_SetViewer
 " color
 syn keyword autoitFunction _ColorConvertHSLtoRGB _ColorConvertRGBtoHSL
-	\ _ColorgetBlue _ColorGetGreen _ColorGetRed
+	\ _ColorGetBlue _ColorGetCOLORREF _ColorGetGreen _ColorGetRed _ColorGetRGB
+	\ _ColorSetCOLORREF _ColorSetRGB
 " crypt
 syn keyword autoitFunction _Crypt_Startup _Crypt_Shutdown _Crypt_DecryptData
 	\ _Crypt_DecryptFile _Crypt_DeriveKey _Crypt_DestroyKey _Crypt_EncryptData
 	\ _Crypt_EncryptFile _Crypt_HashData _Crypt_HashFile
 " date
-syn keyword autoitFunction _Date_Time_CompareFileName
+syn keyword autoitFunction _Date_Time_CompareFileName _Date_Time_CompareFileTime
 	\ _Date_Time_DOSDateTimeToArray _Date_Time_DOSDateTimeToFileTime
 	\ _Date_Time_DOSDateTimeToStr _Date_Time_DOSDateToArray
 	\ _Date_Time_DOSDateToStr _Date_Time_DOSTimeToArray _Date_Time_DOSTimeToStr
@@ -211,11 +215,12 @@ syn keyword autoitFunction _Date_Time_CompareFileName
 	\ _Date_Time_SystemTimeToTimeStr _Date_Time_SystemTimeToTzSpecificLocalTime
 	\ _Date_Time_TzSpecificLocalTimeToSystemTime _DateAdd _DateDayOfWeek
 	\ _DateDaysInMonth _DateDiff _DateIsLeapYear _DateIsValid _DateTimeFormat
-	\ _DateTimeSplit _DateToDayOfWeek _ToDayOfWeekISO _DateToDayValue
+	\ _DateTimeSplit _DateToDayOfWeek _DateToDayOfWeekISO _DateToDayValue
 	\ _DateToMonth _DayValueToDate _Now _NowCalc _NowCalcDate _NowDate _NowTime
 	\ _SetDate _SetTime _TicksToTime _TimeToTicks _WeekNumberISO
 " debug
-syn keyword autoitFunction _Assert _DebugBugReportEnv _DebugOut _DebugSetup
+syn keyword autoitFunction _Assert _DebugBugReportEnv _DebugOut _DebugReport
+	\ _DebugReportEx _DebugReportVar _DebugSetup
 " eventlog
 syn keyword autoitFunction _EventLog__Backup _EventLog__Clear _EventLog__Close
 	\ _EventLog__Count _EventLog__DeregisterSource _EventLog__Full
@@ -656,19 +661,66 @@ syn keyword autoitFunction _GUICtrlRebar_AddBand _GUICtrlRebar_AddToolBarBand
 	\ _GUICtrlRebar_SetColorScheme _GUICtrlRebar_SetTextColor
 	\ _GUICtrlRebar_SetToolTips _GUICtrlRebar_SetUnicodeFormat
 	\ _GUICtrlRebar_ShowBand
+" guirichedit
+syn keyword autoitFunction _GUICtrlRichEdit_AppendText _GUICtrlRichEdit_AutoDetectURL
+	\ _GUICtrlRichEdit_CanPaste _GUICtrlRichEdit_CanPasteSpecial _GUICtrlRichEdit_CanRedo
+	\ _GUICtrlRichEdit_CanUndo _GUICtrlRichEdit_ChangeFontSize _GUICtrlRichEdit_Copy
+	\ _GUICtrlRichEdit_Create _GUICtrlRichEdit_Cut _GUICtrlRichEdit_Deselect
+	\ _GUICtrlRichEdit_Destroy _GUICtrlRichEdit_EmptyUndoBuffer _GUICtrlRichEdit_FindText
+	\ _GUICtrlRichEdit_FindTextInrange _GUICtrlRichEdit_GetBkColor
+	\ _GUICtrlRichEdit_GetCharAttributes _GUICtrlRichEdit_GetCharBkColor
+	\ _GUICtrlRichEdit_GetCharColor _GUICtrlRichEdit_GetCharPosFromXY
+	\ _GUICtrlRichEdit_GetCharPosOfNextWord _GUICtrlRichEdit_GetCharPosOfPreviousWord
+	\ _GUICtrlRichEdit_GetCharWordBreakInfo _GUICtrlRichEdit_GetFirstCharPosOnLine
+	\ _GUICtrlRichEdit_GetFont _GUICtrlRichEdit_GetLineCount
+	\ _GUICtrlRichEdit_GetLineLength _GUICtrlRichEdit_GetLineNumberFromCharPos
+	\ _GUICtrlRichEdit_GetNextRedo _GUICtrlRichEdit_GetNextUndo
+	\ _GUICtrlRichEdit_GetNumberOfFirstVisibleLine _GUICtrlRichEdit_GetParaAlignment
+	\ _GUICtrlRichEdit_GetParaAttributes _GUICtrlRichEdit_GetParaBorder
+	\ _GUICtrlRichEdit_GetParaIndents _GUICtrlRichEdit_GetParaNumbering
+	\ _GUICtrlRichEdit_GetParaShading _GUICtrlRichEdit_GetParaSpacing
+	\ _GUICtrlRichEdit_GetParaTabStops _GUICtrlRichEdit_GetPasswordChar
+	\ _GUICtrlRichEdit_GetRECT _GUICtrlRichEdit_GetScrollPos
+	\ _GUICtrlRichEdit_GetSel _GUICtrlRichEdit_GetSelAA
+	\ _GUICtrlRichEdit_GetSelText _GUICtrlRichEdit_GetSpaceUnit
+	\ _GUICtrlRichEdit_GetText _GUICtrlRichEdit_GetTextInLine
+	\ _GUICtrlRichEdit_GetTextInRange _GUICtrlRichEdit_GetTextLength
+	\ _GUICtrlRichEdit_GetVersion _GUICtrlRichEdit_GetXYFromCharPos
+	\ _GUICtrlRichEdit_GetZoom _GUICtrlRichEdit_GotoCharPos
+	\ _GUICtrlRichEdit_HideSelection _GUICtrlRichEdit_InserTtext
+	\ _GUICtrlRichEdit_IsModified _GUICtrlRichEdit_IsTextSelected
+	\ _GUICtrlRichEdit_Paste _GUICtrlRichEdit_PasteSpecial
+	\ _GUICtrlRichEdit_PauseRedraw _GUICtrlRichEdit_Redo
+	\ _GUICtrlRichEdit_ReplaceText _GUICtrlRichEdit_ResumeRedraw
+	\ _GUICtrlRichEdit_ScrollLineOrPage _GUICtrlRichEdit_ScrollLines
+	\ _GUICtrlRichEdit_ScrollToCaret _GUICtrlRichEdit_SetBkColor
+	\ _GUICtrlRichEdit_SetCharAttributes _GUICtrlRichEdit_SetCharBkColor
+	\ _GUICtrlRichEdit_SetCharColor _GUICtrlRichEdit_SetEventMask
+	\ _GUICtrlRichEdit_SetFont _GUICtrlRichEdit_SetLimitOnText _GUICtrlRichEdit_SetModified
+	\ _GUICtrlRichEdit_SetParaAlignment _GUICtrlRichEdit_SetParaAttributes
+	\ _GUICtrlRichEdit_SetParaBorder _GUICtrlRichEdit_SetParaIndents
+	\ _GUICtrlRichEdit_SetParaNumbering _GUICtrlRichEdit_SetParaShading
+	\ _GUICtrlRichEdit_SetParaSpacing _GUICtrlRichEdit_SetParaTabStops
+	\ _GUICtrlRichEdit_SetPasswordChar _GUICtrlRichEdit_SetReadonly
+	\ _GUICtrlRichEdit_SetRECT _GUICtrlRichEdit_SetScrollPos
+	\ _GUICtrlRichEdit_SetSel _GUICtrlRichEdit_SetSpaceUnit
+	\ _GUICtrlRichEdit_SetTabStops _GUICtrlRichEdit_SetText
+	\ _GUICtrlRichEdit_SetUndoLimit _GUICtrlRichEdit_SetZoom
+	\ _GUICtrlRichEdit_StreamFromFile _GUICtrlRichEdit_StreamFromVar
+	\ _GUICtrlRichEdit_StreamToFile _GUICtrlRichEdit_StreamToVar _GUICtrlRichEdit_Undo
 " guiscrollbars
 syn keyword autoitFunction _GUIScrollBars_EnableScrollBar
 	\ _GUIScrollBars_GetScrollBarInfoEx _GUIScrollBars_GetScrollBarRect
 	\ _GUIScrollBars_GetScrollBarRGState _GUIScrollBars_GetScrollBarXYLineButton
-	\ _GUIScrollBars_GetScrollBarXYThumbButton
+	\ _GUIScrollBars_GetScrollBarXYThumbBottom
 	\ _GUIScrollBars_GetScrollBarXYThumbTop _GUIScrollBars_GetScrollInfo
-	\ _GUIScrollBars_GetScrollInfoEx _GUIScrollBars_GetScollInfoMax
+	\ _GUIScrollBars_GetScrollInfoEx _GUIScrollBars_GetScrollInfoMax
 	\ _GUIScrollBars_GetScrollInfoMin _GUIScrollBars_GetScrollInfoPage
 	\ _GUIScrollBars_GetScrollInfoPos _GUIScrollBars_GetScrollInfoTrackPos
 	\ _GUIScrollBars_GetScrollPos _GUIScrollBars_GetScrollRange
 	\ _GUIScrollBars_Init _GUIScrollBars_ScrollWindow
 	\ _GUIScrollBars_SetScrollInfo _GUIScrollBars_SetScrollInfoMax
-	\ _GUIScrollBars_SetScrollInfoMin _GUIScrollBars_SecScrollInfoPage
+	\ _GUIScrollBars_SetScrollInfoMin _GUIScrollBars_SetScrollInfoPage
 	\ _GUIScrollBars_SetScrollInfoPos _GUIScrollBars_SetScrollRange
 	\ _GUIScrollBars_ShowScrollBar
 " guislider
@@ -707,7 +759,7 @@ syn keyword autoitFunction _GUICtrlStatusBar_Create _GUICtrlStatusBar_Destroy
 	\ _GUICtrlStatusBar_SetTipText _GUICtrlStatusBar_SetUnicodeFormat
 	\ _GUICtrlStatusBar_ShowHide
 " guitab
-syn keyword autoitFunction _GUICtrlTab_ClickTab _GUICtrlTab_Create
+syn keyword autoitFunction _GUICtrlTab_ActivateTab _GUICtrlTab_ClickTab _GUICtrlTab_Create
 	\ _GUICtrlTab_DeleteAllItems _GUICtrlTab_DeleteItem _GUICtrlTab_DeselectAll
 	\ _GUICtrlTab_Destroy _GUICtrlTab_FindTab _GUICtrlTab_GetCurFocus
 	\ _GUICtrlTab_GetCurSel _GUICtrlTab_GetDisplayRect
@@ -781,13 +833,13 @@ syn keyword autoitFunction _GUICtrlToolbar_AddBitmap _GUICtrlToolbar_AddButton
 	\ _GUICtrlToolbar_SetUnicodeFormat _GUICtrlToolbar_SetWindowTheme
 " guitooltip
 syn keyword autoitFunction _GUIToolTip_Activate _GUIToolTip_AddTool
-	\ _GUIToolTip_AdjustRect _GUIToolTip_BitsToTTE _GUIToolTip_Create
+	\ _GUIToolTip_AdjustRect _GUIToolTip_BitsToTTF _GUIToolTip_Create
 	\ _GUIToolTip_DelTool _GUIToolTip_Destroy _GUIToolTip_EnumTools
 	\ _GUIToolTip_GetBubbleHeight _GUIToolTip_GetBubbleSize
 	\ _GUIToolTip_GetBubbleWidth _GUIToolTip_GetCurrentTool
 	\ _GUIToolTip_GetDelayTime _GUIToolTip_GetMargin _GUIToolTip_GetMarginEx
-	\ _GUIToolTip_GetMaxTipWidth _GUIToolTip_GetText _GUIToolTip_GetTipTextColor
-	\ _GUIToolTip_GetTitleBitMap _GUIToolTip_GetTitleText
+	\ _GUIToolTip_GetMaxTipWidth _GUIToolTip_GetText _GUITooltip_GetTipBkColor
+	\ _GUIToolTip_GetTipTextColor _GUIToolTip_GetTitleBitMap _GUIToolTip_GetTitleText
 	\ _GUIToolTip_GetToolCount _GUIToolTip_GetToolInfo _GUIToolTip_HitTest
 	\ _GUIToolTip_NewToolRect _GUIToolTip_Pop _GUIToolTip_PopUp
 	\ _GUIToolTip_SetDelayTime _GUIToolTip_SetMargin _GUIToolTip_SetMaxTipWidth
@@ -865,7 +917,7 @@ syn keyword autoitFunction _IE_Example _IE_Introduction _IE_VersionInfo
 	\ _IEFormElementOptionSelect _IEFormElementRadioSelect
 	\ _IEFormElementSetValue _IEFormGetCollection _IEFormGetObjByName
 	\ _IEFormImageClick _IEFormReset _IEFormSubmit _IEFrameGetCollection
-	\ _IEFrameGetObjByName _IEGetObjByName _IEHeadInsertEventScript
+	\ _IEFrameGetObjByName _IEGetObjById _IEGetObjByName _IEHeadInsertEventScript
 	\ _IEImgClick _IEImgGetCollection _IEIsFrameSet _IELinkClickByIndex
 	\ _IELinkClickByText _IELinkGetCollection _IELoadWait _IELoadWaitTimeout
 	\ _IENavigate _IEPropertyGet _IEPropertySet _IEQuit
@@ -907,13 +959,14 @@ syn keyword autoitFunction _ScreenCapture_Capture _ScreenCapture_CaptureWnd
 	\ _ScreenCapture_SetTIFCompression
 " security
 syn keyword autoitFunction _Security__AdjustTokenPrivileges
+	\ _Security__CreateProcessWithToken _Security__DuplicateTokenEx
 	\ _Security__GetAccountSid _Security__GetLengthSid
 	\ _Security__GetTokenInformation _Security__ImpersonateSelf
 	\ _Security__IsValidSid _Security__LookupAccountName
 	\ _Security__LookupAccountSid _Security__LookupPrivilegeValue
 	\ _Security__OpenProcessToken _Security__OpenThreadToken
 	\ _Security__OpenThreadTokenEx _Security__SetPrivilege
-	\ _Security__SidToStringSid _Security__SidTypeStr
+	\ _Security__SetTokenInformation _Security__SidToStringSid _Security__SidTypeStr
 	\ _Security__StringSidToSid
 " sendmessage
 syn keyword autoitFunction _SendMessage _SendMessageA
@@ -923,7 +976,8 @@ syn keyword autoitFunction _SoundClose _SoundLength _SoundOpen _SoundPause
 " sqlite
 syn keyword autoitFunction _SQLite_Changes _SQLite_Close
 	\ _SQLite_Display2DResult _SQLite_Encode _SQLite_ErrCode _SQLite_ErrMsg
-	\ _SQLite_Escape _SQLite_Exec _SQLite_FetchData _SQLite_FetchNames
+	\ _SQLite_Escape _SQLite_Exec _SQLite_FastEncode _SQLite_FastEscape
+	\ _SQLite_FetchData _SQLite_FetchNames
 	\ _SQLite_GetTable _SQLite_GetTable2D _SQLite_LastInsertRowID
 	\ _SQLite_LibVersion _SQLite_Open _SQLite_Query _SQLite_QueryFinalize
 	\ _SQLite_QueryReset _SQLite_QuerySingleRow _SQLite_SafeMode
@@ -937,7 +991,7 @@ syn keyword autoitFunction _HexToString _StringBetween _StringEncrypt
 syn keyword autoitFunction _Timer_Diff _Timer_GetIdleTime _Timer_GetTimerID _Timer_Init _Timer_KillAllTimers _Timer_KillTimer _Timer_SetTimer
 " visa
 syn keyword autoitFunction _viClose _viExecCommand _viFindGpib _viGpibBusReset
-	\ _viGTL _viOpen _viSetAttribute _viSetTimeout
+	\ _viGTL _ViInteractiveControl _viOpen _viSetAttribute _viSetTimeout
 " winapi
 syn keyword autoitFunction _WinAPI_AttachConsole _WinAPI_AttachThreadInput
 	\ _WinAPI_Beep _WinAPI_BitBlt _WinAPI_CallNextHookEx _WinAPI_CallWindowProc
@@ -951,7 +1005,7 @@ syn keyword autoitFunction _WinAPI_AttachConsole _WinAPI_AttachThreadInput
 	\ _WinAPI_DefWindowProc _WinAPI_DeleteDC _WinAPI_DeleteObject
 	\ _WinAPI_DestroyIcon _WinAPI_DestroyWindow _WinAPI_DrawEdge
 	\ _WinAPI_DrawFrameControl _WinAPI_DrawIcon _WinAPI_DrawIconEx
-	\ _WinAPI_DrawLine _WinAPI_DrawText _WinAPI_EnableWindow
+	\ _WinAPI_DrawLine _WinAPI_DrawText _WinAPI_DuplicateHandle _WinAPI_EnableWindow
 	\ _WinAPI_EnumDisplayDevices _WinAPI_EnumWindows _WinAPI_EnumWindowsPopup
 	\ _WinAPI_EnumWindowsTop _WinAPI_ExpandEnvironmentStrings
 	\ _WinAPI_ExtractIconEx _WinAPI_FatalAppExit _WinAPI_FillRect
@@ -973,18 +1027,21 @@ syn keyword autoitFunction _WinAPI_AttachConsole _WinAPI_AttachThreadInput
 	\ _WinAPI_GetParent _WinAPI_GetProcessAffinityMask _WinAPI_GetSaveFileName
 	\ _WinAPI_GetStdHandle _WinAPI_GetStockObject _WinAPI_GetSysColor
 	\ _WinAPI_GetSysColorBrush _WinAPI_GetSystemMetrics
-	\ _WinAPI_GetTextExtentPoint32 _WinAPI_GetWindow _WinAPI_GetWindowDC
-	\ _WinAPI_GetWindowHeight _WinAPI_GetWindowLong _WinAPI_GetWindowPlacement
-	\ _WinAPI_GetWindowRect _WinAPI_GetWindowText
+	\ _WinAPI_GetTextExtentPoint32 _WinAPI_GetTextMetrics _WinAPI_GetWindow
+	\ _WinAPI_GetWindowDC _WinAPI_GetWindowHeight _WinAPI_GetWindowLong
+	\ _WinAPI_GetWindowPlacement _WinAPI_GetWindowRect _WinAPI_GetWindowRgn
+	\ _WinAPI_GetWindowText
 	\ _WinAPI_GetWindowThreadProcessId _WinAPI_GetWindowWidth
-	\ _WinAPI_GetXYFromPoint _WinAPI_GlobalMemStatus _WinAPI_GUIDFromString
+	\ _WinAPI_GetXYFromPoint _WinAPI_GlobalMemoryStatus _WinAPI_GlobalMemStatus
+	\ _WinAPI_GUIDFromString
 	\ _WinAPI_GUIDFromStringEx _WinAPI_HiWord _WinAPI_InProcess
 	\ _WinAPI_IntToFloat _WinAPI_InvalidateRect _WinAPI_IsClassName
 	\ _WinAPI_IsWindow _WinAPI_IsWindowVisible _WinAPI_LineTo _WinAPI_LoadBitmap
 	\ _WinAPI_LoadImage _WinAPI_LoadLibrary _WinAPI_LoadLibraryEx
 	\ _WinAPI_LoadShell32Icon _WinAPI_LoadString _WinAPI_LocalFree
 	\ _WinAPI_LoWord _WinAPI_MakeDWord _WinAPI_MAKELANGID _WinAPI_MAKELCID
-	\ _WinAPI_MakeLong _WinAPI_MessageBeep _WinAPI_Mouse_Event _WinAPI_MoveTo
+	\ _WinAPI_MakeLong _WinAPI_MakeQWord _WinAPI_MessageBeep
+	\ _WinAPI_Mouse_Event _WinAPI_MoveTo
 	\ _WinAPI_MoveWindow _WinAPI_MsgBox _WinAPI_MulDiv
 	\ _WinAPI_MultiByteToWideChar _WinAPI_MultiByteToWideCharEx
 	\ _WinAPI_OpenProcess _WinAPI_PathFindOnPath _WinAPI_PointFromRect
@@ -1002,7 +1059,8 @@ syn keyword autoitFunction _WinAPI_AttachConsole _WinAPI_AttachThreadInput
 	\ _WinAPI_SetWindowLong _WinAPI_SetWindowPlacement _WinAPI_SetWindowPos
 	\ _WinAPI_SetWindowRgn _WinAPI_SetWindowsHookEx _WinAPI_SetWindowText
 	\ _WinAPI_ShowCursor _WinAPI_ShowError _WinAPI_ShowMsg _WinAPI_ShowWindow
-	\ _WinAPI_StringFromGUID _WinAPI_SubLangId _WinAPI_SystemParametersInfo
+	\ _WinAPI_StringFromGUID _WinAPI_StringLenA _WinAPI_StringLenW
+	\ _WinAPI_SubLangId _WinAPI_SystemParametersInfo
 	\ _WinAPI_TwipsPerPixelX _WinAPI_TwipsPerPixelY _WinAPI_UnhookWindowsHookEx
 	\ _WinAPI_UpdateLayeredWindow _WinAPI_UpdateWindow _WinAPI_ValidateClassName
 	\ _WinAPI_WaitForInputIdle _WinAPI_WaitForMultipleObjects
@@ -1073,6 +1131,7 @@ syn match autoitBuiltin "@MDAY"
 syn match autoitBuiltin "@MIN"
 syn match autoitBuiltin "@MON"
 syn match autoitBuiltin "@MSEC"
+syn match autoitBuiltin "@MUILang"
 syn match autoitBuiltin "@MyDocumentsDir"
 syn match autoitBuiltin "@NumParams"
 syn match autoitBuiltin "@OSArch"
@@ -1219,6 +1278,7 @@ syn match autoitSend "{NUMLOCK}" contained
 syn match autoitSend "{BREAK}" contained
 syn match autoitSend "{PAUSE}" contained
 syn match autoitSend "{CAPSLOCK}" contained
+syn match autoitSend "{SCROLLLOCK}" contained
 syn match autoitSend "{NUMPAD0}" contained
 syn match autoitSend "{NUMPAD1}" contained
 syn match autoitSend "{NUMPAD2}" contained
@@ -1243,10 +1303,15 @@ syn match autoitSend "{RCTRL}" contained
 syn match autoitSend "{LSHIFT}" contained
 syn match autoitSend "{RSHIFT}" contained
 syn match autoitSend "{SLEEP}" contained
+syn match autoitSend "{ALTUP}" contained
 syn match autoitSend "{ALTDOWN}" contained
+syn match autoitSend "{SHIFTUP}" contained
 syn match autoitSend "{SHIFTDOWN}" contained
+syn match autoitSend "{CTRLUP}" contained
 syn match autoitSend "{CTRLDOWN}" contained
+syn match autoitSend "{LWINUP}" contained
 syn match autoitSend "{LWINDOWN}" contained
+syn match autoitSend "{RWINUP}" contained
 syn match autoitSend "{RWINDOWN}" contained
 syn match autoitSend "{ASC \d\d\d\d}" contained
 syn match autoitSend "{BROWSER_BACK}" contained
